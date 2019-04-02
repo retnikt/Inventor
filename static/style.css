@@ -1,0 +1,38 @@
+table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after {
+    content: " \25B4";
+    opacity: 0;
+}
+
+table.sortable th {
+    cursor: pointer;
+}
+
+input[type=checkbox].expand-section {
+    display: none;
+}
+
+input[type=checkbox].expand-section + label.expand-section {
+    cursor: pointer;
+}
+
+input[type=checkbox].expand-section + label.expand-section:after  {
+    content: " \25BA";
+}
+
+input[type=checkbox].expand-section:checked + label.expand-section:after  {
+    content: " \25BC";
+}
+
+input[type=checkbox].expand-section + label.expand-section + div.expand-section  {
+    display: none;
+}
+
+input[type=checkbox].expand-section:checked + label.expand-section + div.expand-section  {
+    display: block;
+}
+
+.items td a {
+    color: inherit;
+    text-decoration: inherit;
+}
+

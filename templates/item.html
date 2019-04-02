@@ -1,0 +1,24 @@
+{% extends "base.html" -%}
+{% block title -%}View Item #{{ item.key.name }}{% endblock -%}
+{% block main -%}
+    <h1>View Item #{{ item.key.name }}</h1>
+    <a href="javascript:history.back()">◄ Back</a>
+    <form action="/i/{{ item.key.name }}" method="post">
+        <table>
+            {% set types = dict(zip(namespace.field_names, namespace.field_types)) -%}
+            {% for field, value in item.fields.items() -%}
+                <tr>
+                    <td><label for="field_{{ field }}">{{ field }} ({{ types.get(field, "string") }})</label></td>
+                    <td>
+                        {% set pattern = ".*" -%}
+                        <input type="text" id="field_{{ field }}" name="field_{{ field }}" required value="{{ value }}"
+                               pattern="{{ TYPE_REGEXES.get(types.get(field, "string"), ".*") }}"/>
+                    </td>
+                </tr>
+            {% endfor -%}
+            <tr>
+                <td><input type="submit"/></td>
+            </tr>
+        </table>
+    </form>
+{% endblock -%}

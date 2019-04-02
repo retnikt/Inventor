@@ -1,0 +1,43 @@
+{% extends "base.html" -%}
+{% block title %}Items - {{ n }}{% endblock -%}
+{% block main -%}
+    <div class="items-container">
+        <h1>Items - {{ n }}</h1>
+        <p><a href="/n/{{ n }}/">View Namespace</a></p>
+        <input type="checkbox" class="expand-section" id="expand-filters"/>
+        <label for="expand-filters" class="expand-section">Filters</label>
+        <div class="expand-section">
+            {# TODO: filters #}
+        </div>
+        {% if message -%}
+            <p class="message">{{ message }}</p>
+        {% endif -%}
+        <p><a href="/n/{{ n }}/create">New Item</a></p>
+        <table class="items sortable">
+            <thead>
+            <tr>
+                {% for header, attr in columns.items() -%}
+                    <th>{{ header }}</th>
+                {% endfor -%}
+                <th class="sortable_nosort quick-actions"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in items -%}
+                <tr>
+                    {% for attr in columns.values() -%}
+                        <td>{{ item.fields.get(attr) }}</td>
+                    {% endfor -%}
+                    <td class="quick-actions">
+                        {% for icon, action in quick_actions -%}
+                            <a href="/n/{{ n }}/i/{{ item.key.name }}/{{ action }}"><i class="fas fa-{{ icon }}"></i></a>
+                        {% endfor -%}
+                    </td>
+                </tr>
+            {% endfor -%}
+            </tbody>
+        </table>
+        <!--Modified version of https://www.kryogenix.org/code/browser/sorttable/ licensed under MIT-->
+        <script src="/sorttable.js"></script>
+    </div>
+{% endblock -%}

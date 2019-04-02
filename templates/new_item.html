@@ -1,0 +1,26 @@
+{% extends "base.html" -%}
+{% block title -%}Create Item{% endblock -%}
+{% block main -%}
+    <h1>Create Item</h1>
+    <a href="/n/{{ n.key.name }}">◄ Cancel</a>
+    <form action="/n/{{ n.key.name }}/create" method="post">
+        <table>
+            {% for name, type, default in zip(n.field_names, n.field_types, n.field_defaults) -%}
+                <tr>
+                    <td><label for="field_{{ name }}">{{ name }} ({{ type }})</label></td>
+                    <td>
+                        {% set pattern = ".*" -%}
+                        {% if default != None -%}
+                        <input type="text" id="field_{{ name }}" name="field_{{ name }}" required value="{{ default }}" pattern="{{ pattern }}"/>
+                        {% else -%}
+                        <input type="text" id="field_{{ name }}" name="field_{{ name }}" required pattern="{{ pattern }}"/>
+                        {% endif -%}
+                    </td>
+                </tr>
+            {% endfor -%}
+            <tr>
+                <td><input type="submit"/></td>
+            </tr>
+        </table>
+    </form>
+{% endblock -%}

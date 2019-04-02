@@ -1,0 +1,34 @@
+{% extends "base.html" -%}
+{% block title %}{{ n.key.name }} - Namespaces{% endblock -%}
+{% block main -%}
+    <h1>Namespace <code>{{ n.key.name }}</code></h1>
+    <p><a href="/n/">◄ Back to Namespaces</a></p>
+    <p><a href="/n/{{ n.key.name }}/i/">View Items</a></p>
+    <p><strong>Created At: </strong><em>{{ n.created_date.isoformat() }}</em></p>
+    <p><strong>Created By: </strong><em>{{ n.created_user.name }}</em></p>
+    <input type="checkbox" class="expand-section" id="namespace-history"/>
+    <label for="namespace-history" class="expand-section">History</label>
+    <div class="expand-section namespace-history-box">
+        {# TODO: namespace history #}
+    </div>
+    <h2>Fields</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Default Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for name, type, default in zip(n.field_names, n.field_types, n.field_defaults) -%}
+                <tr>
+                    <td>{{ name }}</td>
+                    <td>{{ type }}</td>
+                    <td>{{ default }}</td>
+                </tr>
+            {% endfor -%}
+        </tbody>
+    </table>
+    <p><strong>Notes: </strong><br/>{{ n.notes }}</p>
+{% endblock -%}

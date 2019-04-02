@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Select Namespace{% endblock %}
+{% block main %}
+    <div class="namespace-select">
+        <h1>Select Namespace</h1>
+        {% for id in namespaces %}
+        <a href="/n/{{ id }}" class="namespace">{{ id }}</a>
+        {% endfor %}
+    </div>
+{% endblock %}
+
