@@ -38,6 +38,7 @@ class Inventor(Flask):
         self.db = datastore.Client()
 
     def logged_in(self, func):
+        # copy function attributes
         @wraps(func)
         def inner(*args, **kwargs):
             if not session.get("logged_in"):
@@ -46,12 +47,40 @@ class Inventor(Flask):
         return inner
 
     def permission(self, *args, **kwargs):
+        """
+        decorator [factory] to ensure the user is logged in and has permissions
+        :param args: individual permissions they gotta have
+        e.g. if your route is
+        ```
+        @app.permission("exist")
+        @app.route("/foo")
+        def foo():
+            ...
+        ```
+        then the user would have to have "exist" in their permission list
+        :param kwargs: keys of the function call that have to be in the users VALUE permission list.
+        e.g. if your route is
+        ```
+        @app.permission(bar="allowed_bars")
+        @app.route("/foo/<bar>")
+        def foo(bar):
+            ...
+        ```
+        then the user needs to be logged in and have the BAR value (that they provided)
+         in their permission list for "allowed_bars".
+        :return: decorator that ensures the above
+        """
         def decorator(func):
+            # obviously they have to be logged in to do this
+            @self.logged_in
+            # copy function attributes
             @wraps(func)
             def inner(*pass_args, **pass_kwargs):
                 if request.method in ("GET", "HEAD"):
+                    # GET request so they are trying to view a page
                     msg = "You do not have permission to view this page."
                 else:
+                    # some other method so they are trying to perform an action
                     msg = "You do not have permission to perform this action."
                 for perm in args:
                     if perm not in session["permissions"]:
@@ -60,12 +89,19 @@ class Inventor(Flask):
                     if pass_kwargs[value] not in session[perm]:
                         return render_template("error.html", error=msg), 403
                 return func(*pass_args, **pass_kwargs)
-            return self.logged_in(inner)
+            return inner
         return decorator
 
 
 class InvalidUserSuppliedValue(ValueError):
     def __init__(self, original_exception, key=None, value=None, msg=None):
+        """
+        the user done fucked up
+        :param original_exception: original exception to reraise if in debug mode
+        :param key: which key they done fucked up
+        :param value: what they put that was fucked uo
+        :param msg: extra info about the fuck-up
+        """
         self.key = key
         self.value = value
         self.original_exception = original_exception
