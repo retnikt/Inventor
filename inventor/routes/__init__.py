@@ -1,1 +1,1 @@
-from . import create_item, items, item, namespaces, login
+from . import create_item, items, item, namespaces, login, settings

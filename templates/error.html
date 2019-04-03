@@ -4,3 +4,6 @@
     <h1>Error</h1>
     <p>{{ error }}</p>
 {% endblock -%}
+<!-- For some reason IE decides to display a generic "friendly" error message instead of the actual HTML if it
+thinks it's too short (less than 512 bytes), so this is some filler. REF: http://support.microsoft.com/kb/294807.
+Anyway by this point we've filled that, so this is the end of the padding. -->
