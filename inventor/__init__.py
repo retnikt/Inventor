@@ -1,10 +1,12 @@
-from flask import Flask
+from flask import Flask, session, request, redirect, url_for, render_template
 from google.cloud import datastore
-from . import ids
-import secrets
-from datetime import datetime
 
-app = Flask("inventor", static_url_path="", static_folder="../static", template_folder="../templates")
+from . import ids
+
+from datetime import datetime
+from functools import wraps
+import secrets
+
 USERNAME = "admin"
 PASSWORD = "password"
 ITEMS_PER_PAGE = 50
@@ -35,6 +37,32 @@ class Inventor(Flask):
                                        template_folder="../templates")
         self.db = datastore.Client()
 
+    def logged_in(self, func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if not session.get("logged_in"):
+                return redirect(url_for("login"))
+            return func(*args, **kwargs)
+        return inner
+
+    def permission(self, *args, **kwargs):
+        def decorator(func):
+            @wraps(func)
+            def inner(*pass_args, **pass_kwargs):
+                if request.method in ("GET", "HEAD"):
+                    msg = "You do not have permission to view this page."
+                else:
+                    msg = "You do not have permission to perform this action."
+                for perm in args:
+                    if perm not in session["permissions"]:
+                        return render_template("error.html", error=msg), 403
+                for value, perm in kwargs.items():
+                    if pass_kwargs[value] not in session[perm]:
+                        return render_template("error.html", error=msg), 403
+                return func(*pass_args, **pass_kwargs)
+            return self.logged_in(inner)
+        return decorator
+
 
 class InvalidUserSuppliedValue(ValueError):
     def __init__(self, original_exception, key=None, value=None, msg=None):
@@ -42,6 +70,9 @@ class InvalidUserSuppliedValue(ValueError):
         self.value = value
         self.original_exception = original_exception
         self.msg = msg
+
+
+app = Inventor()
 
 
 def init(debug):
